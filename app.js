@@ -17,7 +17,10 @@ var dishRouter = require("./routes/dishRouter");
 var promoRouter = require("./routes/promoRouter");
 var leaderRouter = require("./routes/leaderRouter");
 
-var url = "mongodb://localhost:27017/conFusion";
+var config = require("./config");
+
+const url = config.mongoUrl;
+
 var connect = mongoose.connect(url);
 
 connect.then(
