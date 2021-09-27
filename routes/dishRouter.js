@@ -234,7 +234,7 @@ dishRouter
         (dish) => {
           if (dish != null && dish.comments.id(req.params.commentId) != null) {
             if (
-              req.user._id.equals(
+              !req.user._id.equals(
                 dish.comments.id(req.params.commentId).author._id
               )
             ) {
@@ -283,19 +283,31 @@ dishRouter
       .then(
         (dish) => {
           if (dish != null && dish.comments.id(req.params.commentId) != null) {
-            dish.comments.id(req.params.commentId).remove();
-            dish.save().then(
-              (dish) => {
-                Dishes.findById(dish._id)
-                  .populate("comments.author")
-                  .then((dish) => {
-                    res.statusCode = 200;
-                    res.setHeader("Content-Type", "application/json");
-                    res.json(dish);
-                  });
-              },
-              (err) => next(err)
-            );
+            if (
+              req.user._id.equals(
+                dish.comments.id(req.params.commentId).author._id
+              )
+            ) {
+              dish.comments.id(req.params.commentId).remove();
+              dish.save().then(
+                (dish) => {
+                  Dishes.findById(dish._id)
+                    .populate("comments.author")
+                    .then((dish) => {
+                      res.statusCode = 200;
+                      res.setHeader("Content-Type", "application/json");
+                      res.json(dish);
+                    });
+                },
+                (err) => next(err)
+              );
+            } else {
+              err = new Error(
+                "You are not authorized to perform this operation!"
+              );
+              err.status = 403;
+              return next(err);
+            }
           } else if (dish == null) {
             err = new Error("Dish " + req.params.dishId + " not found");
             err.status = 404;
