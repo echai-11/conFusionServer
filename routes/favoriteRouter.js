@@ -70,13 +70,13 @@ favoriteRouter
                     )
                     .catch((err) => next(err));
                 } else {
-                  err = new Error("Dish " + req.params.dishId + " not found");
+                  err = new Error("Dish " + dishId._id + " not found");
                   err.status = 404;
                   return next(err);
                 }
               },
               (err) => {
-                err = new Error("Dish " + dishId._id + " not found");
+                err = new Error("Dish 2" + dishId._id + " not found");
                 err.status = 404;
                 return next(err);
               }
@@ -171,10 +171,10 @@ favoriteRouter
   .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Favorites.findOneAndDelete({ user: req.user._id, dish: req.params.dishId })
       .then(
-        (dish) => {
+        (favorite) => {
           res.statusCode = 200;
           res.setHeader("Content-Type", "application/json");
-          res.json(dish);
+          res.json(favorite);
         },
         (err) => {
           err = new Error("Dish " + req.params.dishId + " not found");
